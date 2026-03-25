@@ -1,7 +1,7 @@
 import numpy as np
 from statsmodels.tsa.stattools import acf
 
-LONGITUD = 44100*2 # 1 segundo
+LONGITUD = 44100*2 # 2 segundo
 
 
 def recortar(audio):
@@ -29,12 +29,33 @@ def espectro_promedio(audios, tipo):
         autocov = acf(x, nlags=LONGITUD-1, fft=True)
 
         # FFT + magnitud
-        fft = np.fft.fft(autocov)
+        fft = np.fft.rfft(autocov)  
         espectros.append(np.abs(fft))
 
     espectro = np.mean(espectros, axis=0)
 
+    #normalizar, opcional pero mejor
+    espectro = espectro / np.max(espectro)
+    
     # persistencia
     np.save(tipo, espectro)
+
+    return espectro
+
+
+def espectro_individual(audio):
+    if len(audio.shape) > 1:
+        audio = np.mean(audio, axis=1)
+
+    audio = recortar(audio)
+
+    x = audio - np.mean(audio)
+
+    autocov = acf(x, nlags=LONGITUD-1, fft=True)
+
+    espectro = np.abs(np.fft.rfft(autocov))
+
+    if np.max(espectro) != 0:
+        espectro = espectro / np.max(espectro)
 
     return espectro
