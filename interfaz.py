@@ -66,7 +66,7 @@ def inicioInterfaz():
     def manejar_grabacion():
         audio = grabar_audio()  
         resultado = clasificar_audio(audio, espectro_fm, espectro_wn)
-        espectro_au= determinar_espectro(audio)
+        espectro_au = determinar_espectro(audio, "temp.npy")
 
         ax1.cla()
         ax2.cla()
@@ -101,3 +101,4 @@ def inicioInterfaz():
 
     root.protocol("WM_DELETE_WINDOW", cerrarVentana)
     root.mainloop()
+    

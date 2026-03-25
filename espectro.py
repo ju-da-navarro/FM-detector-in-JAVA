@@ -53,4 +53,7 @@ def determinar_espectro(audio_data, tipo = ""):
     #En caso de que se ingrese un valor único (Generalmente es para clasificar)
     espectro = np.abs(calcularFFT(audio_data))
 
+    if tipo:
+        np.save(tipo, espectro)
+
     return (espectro / np.max(espectro)) if (np.max(espectro) != 0) else espectro
