@@ -62,11 +62,13 @@ def inicioInterfaz():
 
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+    historial_espectro = []
     
     def manejar_grabacion():
         audio = grabar_audio()  
         resultado = clasificar_audio(audio, espectro_fm, espectro_wn)
-        espectro_au= determinar_espectro(audio)
+        espectro_au = determinar_espectro(audio)
 
         ax1.cla()
         ax2.cla()
@@ -90,14 +92,18 @@ def inicioInterfaz():
 
         canvas.draw()  
         label_resultado.config(text=f"El audio analizado es: {resultado}")
+
+        historial_espectro.append(espectro_au)
     
     boton['command'] = manejar_grabacion
 
-    def cerrarVentana():    
-        print("Ventana cerrada, finalizando programa")
+    def cerrar_app():
+        print("Guardando datos...")
         sd.stop()
-        root.destroy()
-        sys.exit(0)
+        np.save("temp.npy", historial_espectro)
+        root.quit()
 
-    root.protocol("WM_DELETE_WINDOW", cerrarVentana)
+    root.protocol("WM_DELETE_WINDOW", cerrar_app)
     root.mainloop()
+    root.destroy()
+    

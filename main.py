@@ -40,6 +40,7 @@ if __name__ == "__main__":
 
     elif opcion == "2":
         inicioInterfaz()
+        print("Programa finalizado exitosamente")
 
     else:
         print("Opción inválida")
