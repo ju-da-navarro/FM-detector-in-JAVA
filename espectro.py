@@ -1,7 +1,7 @@
 import numpy as np
 from statsmodels.tsa.stattools import acf
 
-LONGITUD = 44100*3 # 1 segundo
+LONGITUD = 44100*2 # 1 segundo
 
 
 def recortar(audio):

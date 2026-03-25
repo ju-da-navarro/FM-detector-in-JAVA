@@ -1,9 +1,8 @@
 import os
 import numpy as np
 from scipy.io import wavfile
-import sounddevice as sd
 from espectro import espectro_promedio
-from clasificador import clasificar_audio
+from interfaz import inicioInterfaz
 
 ## UTILS
 
@@ -22,15 +21,6 @@ def cargar_audios(carpeta):
     return audios
 
 
-## GRABACION DE AUDIO SENCILLA
-
-def grabar_audio(duracion=3, samplerate=44100):
-    print("Grabando...")
-    audio = sd.rec(int(duracion * samplerate), samplerate=samplerate, channels=1)
-    sd.wait()
-    print("Grabación terminada")
-
-    return audio.flatten()
 
 
 ## LOGICA DEL MAIN
@@ -49,19 +39,10 @@ if __name__ == "__main__":
         espectro_promedio(audios_fm, "espectro_FM.npy")
         espectro_promedio(audios_wn, "espectro_WN.npy")
 
-        print("Modelo entrenado ✅")
+        print("Modelo entrenado Correctamente")
 
     elif opcion == "2":
-
-        # cargar espectros guardados
-        espectro_fm = np.load("espectro_FM.npy")
-        espectro_wn = np.load("espectro_WN.npy")
-
-        audio = grabar_audio()
-
-        resultado = clasificar_audio(audio, espectro_fm, espectro_wn)
-
-        print("Resultado:", resultado)
+        inicioInterfaz()
 
     else:
         print("Opción inválida")
