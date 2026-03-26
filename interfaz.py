@@ -1,13 +1,10 @@
 import tkinter as tk
 import sounddevice as sd
 from clasificador import clasificar_audio
-from espectro import LONGITUD, determinar_espectro, determinar_autocov
+from espectro import determinar, LONGITUD
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import sys
-
-
 
 ## GRABACION DE AUDIO SENCILLA
 def grabar_audio(duracion=2, samplerate=44100):
@@ -44,6 +41,7 @@ def inicioInterfaz():
     autocov_wn = np.load("autocov_wn.npy")
 
     frecuencias = np.fft.rfftfreq(LONGITUD, d=1/44100)
+    lags = np.arange(len(autocov_wn)) #Por esto fallaba, para graficar x se necesitaban era lags
 
     ##LOGICA DE ESPECTRO
 
@@ -51,14 +49,18 @@ def inicioInterfaz():
 
     ax1.plot(frecuencias, espectro_wn, label="WN", color="blue")
     ax1.set_title("Espectro WN")
+    ax1.set_xlabel("Frecuencia (Hz)")
+    ax1.set_ylabel("Magnitud espectro")
     ax1.legend()
 
     ax2.plot(frecuencias, espectro_fm, label="FM", color="green")
     ax2.set_title("Espectro FM")
+    ax2.set_xlabel("Frecuencia (Hz)")
+    ax2.set_ylabel("Magnitud espectro")
     ax2.legend()
 
-    ax1.set_xlim(0, 4000)
-    ax2.set_xlim(0, 4000)
+    ax1.set_xlim(0, 750)
+    ax2.set_xlim(0, 2000)
 
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -67,29 +69,31 @@ def inicioInterfaz():
 
     fig2, (ax3, ax4) = plt.subplots(1, 2, figsize=(10, 4))
 
-    ax3.plot(frecuencias - 1, autocov_wn, label="autocov WN", color="blue")
+    ax3.plot(lags, autocov_wn, label="autocov WN", color="blue")
     ax3.set_title("Autocovarianza WN")
+    ax3.set_xlabel("Lags (Muestras)")
+    ax3.set_ylabel("Autocovarianza")
     ax3.legend()
 
-    ax4.plot(frecuencias - 1, autocov_fm, label="autocov FM", color="green")
+    ax4.plot(lags, autocov_fm, label="autocov FM", color="green")
     ax4.set_title("Autocovarianza FM")
+    ax4.set_xlabel("Lags (Muestras)")
+    ax4.set_ylabel("Autocovarianza")
     ax4.legend()
 
-    ax3.set_xlim(0, 4000)
-    ax4.set_xlim(0, 4000)
+    ax3.set_xlim(0, 750)
+    ax4.set_xlim(0, 2000)
 
     canvas2 = FigureCanvasTkAgg(fig2, master=root)
     canvas2.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
-
 
     historial_espectro = []
     
     def manejar_grabacion():
         audio = grabar_audio()  
         resultado = clasificar_audio(audio, espectro_fm, espectro_wn)
-        espectro_au = determinar_espectro(audio)
-        autocov_au = determinar_autocov(audio)
+        espectro_au = determinar(audio, "espec")
+        autocov_au = determinar(audio, "acov")
 
         ax1.cla()
         ax2.cla()
@@ -98,28 +102,36 @@ def inicioInterfaz():
         
         color = "red"
 
-        ax3.plot(frecuencias, autocov_wn, label="autocov WN", color="blue")
-        ax3.set_title("Autocovarianza WN")
-        ax3.set_xlim(0, 4000)
-
-        ax4.plot(frecuencias, autocov_fm, label="autocov FM", color="green")
-        ax4.set_title("Autocovarianza FM")
-        ax4.set_xlim(0, 4000)
-
         ax1.plot(frecuencias, espectro_wn, label="WN", color="blue")
         ax1.set_title("Espectro WN")
-        ax1.set_xlim(0, 4000)
+        ax1.set_title("Espectro WN")
+        ax1.set_xlabel("Frecuencia (Hz)")
+        ax1.set_xlim(0, 750)
 
         ax2.plot(frecuencias, espectro_fm, label="FM", color="green")
         ax2.set_title("Espectro FM")
-        ax2.set_xlim(0, 4000)
+        ax2.set_title("Espectro WN")
+        ax2.set_xlabel("Frecuencia (Hz)")
+        ax2.set_xlim(0, 2000)
+
+        ax3.plot(lags, autocov_wn, label="autocov WN", color="blue")
+        ax3.set_title("Autocovarianza WN")
+        ax3.set_xlabel("Lags (Muestras)")
+        ax3.set_ylabel("Autocovarianza")
+        ax3.set_xlim(0, 750)
+
+        ax4.plot(lags, autocov_fm, label="autocov FM", color="green")
+        ax4.set_title("Autocovarianza FM")
+        ax4.set_xlabel("Lags (Muestras)")
+        ax4.set_ylabel("Autocovarianza")
+        ax4.set_xlim(0, 2000)
 
         # añadir a ambas gráficas
         ax1.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
         ax2.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
 
-        ax3.plot(frecuencias, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
-        ax4.plot(frecuencias, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
+        ax3.plot(lags, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
+        ax4.plot(lags, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
 
         ax1.legend()
         ax2.legend()

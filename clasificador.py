@@ -1,8 +1,8 @@
 import numpy as np
-from espectro import determinar_espectro
+from espectro import determinar
 
 def clasificar_audio(audio, espectro_fm, espectro_wn):
-    espectro_audio = determinar_espectro(audio)
+    espectro_audio = determinar(audio, "espec")
 
     diff_fm = np.mean(np.abs(espectro_audio - espectro_fm))
     diff_wn = np.mean(np.abs(espectro_audio - espectro_wn))

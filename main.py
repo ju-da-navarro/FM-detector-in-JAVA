@@ -1,22 +1,30 @@
 import os
 import numpy as np
-from scipy.io import wavfile
-from espectro import determinar_espectro, determinar_autocov
+import librosa
+from espectro import determinar
 from interfaz import inicioInterfaz
-
 ## UTILS
 
-def cargar_audios(carpeta):
+def obtener_archivos(directorio):
+    return [os.path.join(directorio, file) for file in os.listdir(directorio)]
+
+def cargar_audio(archivo, freq = 44100):
+    audio, _ = librosa.load(archivo, sr=freq, dtype=np.float64) 
+    audio = librosa.util.fix_length(audio, size=freq*2)
+    return audio
+
+def cargarListaAudios(directorio, freq = 44100):
+    archivos = obtener_archivos(directorio)
     audios = []
 
-    for archivo in os.listdir(carpeta):
-        if archivo.endswith(".wav"):
-            ruta = os.path.join(carpeta, archivo)
+    for archivo in archivos:
+        audio = cargar_audio(archivo, freq=freq)
+        audios.append(audio)
 
-            sr, audio = wavfile.read(ruta)
-            audio = audio.astype(float)
-
-            audios.append(audio)
+    if not audios:
+        print("Error, no se cargaron audios")
+    else:
+        print("Audios cargados correctamente")
 
     return audios
 
@@ -30,13 +38,13 @@ if __name__ == "__main__":
     opcion = input("Seleccione opción: ")
 
     if opcion == "1":
-        audios_fm = cargar_audios("data/FM")
-        audios_wn = cargar_audios("data/WN")
+        audios_fm = cargarListaAudios("data/FM")
+        audios_wn = cargarListaAudios("data/WN")
 
-        determinar_espectro(audios_fm, "espectro_FM.npy")
-        determinar_espectro(audios_wn, "espectro_WN.npy")
-        determinar_autocov(audios_fm, "autocov_fm.npy")
-        determinar_autocov(audios_wn, "autocov_wn.npy")
+        determinar(audios_fm, "espec", "espectro_FM.npy")
+        determinar(audios_wn, "espec", "espectro_WN.npy")
+        determinar(audios_fm, "acov", "autocov_fm.npy")
+        determinar(audios_wn, "acov", "autocov_wn.npy")
 
         print("Modelo entrenado Correctamente")
 
