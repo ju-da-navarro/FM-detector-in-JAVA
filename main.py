@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from scipy.io import wavfile
-from espectro import determinar_espectro
+from espectro import determinar_espectro, determinar_autocov
 from interfaz import inicioInterfaz
 
 ## UTILS
@@ -35,6 +35,8 @@ if __name__ == "__main__":
 
         determinar_espectro(audios_fm, "espectro_FM.npy")
         determinar_espectro(audios_wn, "espectro_WN.npy")
+        determinar_autocov(audios_fm, "autocov_fm.npy")
+        determinar_autocov(audios_wn, "autocov_wn.npy")
 
         print("Modelo entrenado Correctamente")
 

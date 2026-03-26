@@ -1,7 +1,7 @@
 import tkinter as tk
 import sounddevice as sd
 from clasificador import clasificar_audio
-from espectro import LONGITUD, determinar_espectro
+from espectro import LONGITUD, determinar_espectro, determinar_autocov
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -40,16 +40,19 @@ def inicioInterfaz():
     espectro_fm = np.load("espectro_FM.npy")
     espectro_wn = np.load("espectro_WN.npy")
 
+    autocov_fm = np.load("autocov_fm.npy")
+    autocov_wn = np.load("autocov_wn.npy")
+
     frecuencias = np.fft.rfftfreq(LONGITUD, d=1/44100)
+
+    ##LOGICA DE ESPECTRO
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
-    # --- WN ---
     ax1.plot(frecuencias, espectro_wn, label="WN", color="blue")
     ax1.set_title("Espectro WN")
     ax1.legend()
 
-    # --- FM ---
     ax2.plot(frecuencias, espectro_fm, label="FM", color="green")
     ax2.set_title("Espectro FM")
     ax2.legend()
@@ -60,17 +63,48 @@ def inicioInterfaz():
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+    ##LOGICA DE AUTOCOV
+
+    fig2, (ax3, ax4) = plt.subplots(1, 2, figsize=(10, 4))
+
+    ax3.plot(frecuencias - 1, autocov_wn, label="autocov WN", color="blue")
+    ax3.set_title("Autocovarianza WN")
+    ax3.legend()
+
+    ax4.plot(frecuencias - 1, autocov_fm, label="autocov FM", color="green")
+    ax4.set_title("Autocovarianza FM")
+    ax4.legend()
+
+    ax3.set_xlim(0, 4000)
+    ax4.set_xlim(0, 4000)
+
+    canvas2 = FigureCanvasTkAgg(fig2, master=root)
+    canvas2.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+
+
     historial_espectro = []
     
     def manejar_grabacion():
         audio = grabar_audio()  
         resultado = clasificar_audio(audio, espectro_fm, espectro_wn)
         espectro_au = determinar_espectro(audio)
+        autocov_au = determinar_autocov(audio)
 
         ax1.cla()
         ax2.cla()
+        ax3.cla()
+        ax4.cla()
         
         color = "red"
+
+        ax3.plot(frecuencias, autocov_wn, label="autocov WN", color="blue")
+        ax3.set_title("Autocovarianza WN")
+        ax3.set_xlim(0, 4000)
+
+        ax4.plot(frecuencias, autocov_fm, label="autocov FM", color="green")
+        ax4.set_title("Autocovarianza FM")
+        ax4.set_xlim(0, 4000)
 
         ax1.plot(frecuencias, espectro_wn, label="WN", color="blue")
         ax1.set_title("Espectro WN")
@@ -84,10 +118,17 @@ def inicioInterfaz():
         ax1.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
         ax2.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
 
+        ax3.plot(frecuencias, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
+        ax4.plot(frecuencias, autocov_au, linestyle="--", alpha=0.4, color=color, label="Audio")
+
         ax1.legend()
         ax2.legend()
-
         canvas.draw()  
+
+        ax3.legend()
+        ax4.legend()
+        canvas2.draw()
+
         label_resultado.config(text=f"El audio analizado es: {resultado}", fg="blue" if resultado == "Ruido Blanco" else "green")
 
         historial_espectro.append(espectro_au)
