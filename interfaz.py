@@ -32,10 +32,10 @@ def inicioInterfaz():
     boton.pack()
 
     label_resultado = tk.Label(
-    root,
-    text="Resultado aquí...",
-    font=("Arial", 16, "bold"),
-    fg="blue"
+        root,
+        text="Resultado aquí...",
+        font=("Arial", 16, "bold"),
+        fg="black"
     )
     label_resultado.pack()
 
@@ -91,7 +91,7 @@ def inicioInterfaz():
         ax2.legend()
 
         canvas.draw()  
-        label_resultado.config(text=f"El audio analizado es: {resultado}")
+        label_resultado.config(text=f"El audio analizado es: {resultado}", fg="blue" if resultado == "Ruido Blanco" else "green")
 
         historial_espectro.append(espectro_au)
     
