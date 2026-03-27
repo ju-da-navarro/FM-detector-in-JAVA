@@ -1,7 +1,7 @@
 import tkinter as tk
 import sounddevice as sd
-from clasificador import clasificar_audio
-from espectro import determinar, LONGITUD
+from clasificador.clasificador import clasificar_audio
+from algoritmo.espectro import determinar, LONGITUD
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -11,13 +11,13 @@ def grabar_audio(duracion=2, samplerate=44100):
     print(f"Grabando...{duracion}s")
     audio = sd.rec(int(duracion * samplerate), samplerate=samplerate, channels=1)
     sd.wait()
-    print("Grabación terminada")
+    print("Grabación terminada")    
 
     return audio.flatten()
 
-
 def inicioInterfaz():
     root = tk.Tk()
+    root.title("Reconocedor de audio")
     titulo = tk.Label(root, text="Analizador de FM-WN", font=("Arial", 20, "bold"))
     titulo.pack()
     root.geometry("800x400")
@@ -34,14 +34,14 @@ def inicioInterfaz():
     label_resultado.pack()
 
     # cargar espectros guardados
-    espectro_fm = np.load("espectro_FM.npy")
-    espectro_wn = np.load("espectro_WN.npy")
+    espectro_fm = np.load("patrones_referencia/espectro_FM.npy")
+    espectro_wn = np.load("patrones_referencia/espectro_WN.npy")
 
-    autocov_fm = np.load("autocov_fm.npy")
-    autocov_wn = np.load("autocov_wn.npy")
+    autocov_fm = np.load("patrones_referencia/autocov_fm.npy")
+    autocov_wn = np.load("patrones_referencia/autocov_wn.npy")
 
     frecuencias = np.fft.rfftfreq(LONGITUD, d=1/44100)
-    lags = np.arange(len(autocov_wn)) #Por esto fallaba, para graficar x se necesitaban era lags
+    lags = np.arange(len(autocov_wn)) #Por esto fallaba, para graficar x se necesitaban era lags (las muestras)
 
     ##LOGICA DE ESPECTRO
 
@@ -59,8 +59,8 @@ def inicioInterfaz():
     ax2.set_ylabel("Magnitud espectro")
     ax2.legend()
 
-    ax1.set_xlim(0, 750)
-    ax2.set_xlim(0, 2000)
+    ax1.set_xlim(0, 500)
+    ax2.set_xlim(0, 500)
 
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -81,8 +81,8 @@ def inicioInterfaz():
     ax4.set_ylabel("Autocovarianza")
     ax4.legend()
 
-    ax3.set_xlim(0, 750)
-    ax4.set_xlim(0, 2000)
+    ax3.set_xlim(0, 500)
+    ax4.set_xlim(0, 500)
 
     canvas2 = FigureCanvasTkAgg(fig2, master=root)
     canvas2.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -106,25 +106,25 @@ def inicioInterfaz():
         ax1.set_title("Espectro WN")
         ax1.set_title("Espectro WN")
         ax1.set_xlabel("Frecuencia (Hz)")
-        ax1.set_xlim(0, 750)
+        ax1.set_xlim(0, 500)
 
         ax2.plot(frecuencias, espectro_fm, label="FM", color="green")
         ax2.set_title("Espectro FM")
         ax2.set_title("Espectro WN")
         ax2.set_xlabel("Frecuencia (Hz)")
-        ax2.set_xlim(0, 2000)
+        ax2.set_xlim(0, 500)
 
         ax3.plot(lags, autocov_wn, label="autocov WN", color="blue")
         ax3.set_title("Autocovarianza WN")
         ax3.set_xlabel("Lags (Muestras)")
         ax3.set_ylabel("Autocovarianza")
-        ax3.set_xlim(0, 750)
+        ax3.set_xlim(0, 500)
 
         ax4.plot(lags, autocov_fm, label="autocov FM", color="green")
         ax4.set_title("Autocovarianza FM")
         ax4.set_xlabel("Lags (Muestras)")
         ax4.set_ylabel("Autocovarianza")
-        ax4.set_xlim(0, 2000)
+        ax4.set_xlim(0, 500)
 
         # añadir a ambas gráficas
         ax1.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
@@ -150,7 +150,7 @@ def inicioInterfaz():
     def cerrar_app():
         print("Guardando datos...")
         sd.stop()
-        np.save("temp.npy", historial_espectro)
+        np.save("patrones_referencia/micEspec.npy", historial_espectro)
         root.quit()
 
     root.protocol("WM_DELETE_WINDOW", cerrar_app)

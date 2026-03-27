@@ -1,8 +1,9 @@
 import os
 import numpy as np
 import librosa
-from espectro import determinar
-from interfaz import inicioInterfaz
+from algoritmo.espectro import determinar
+from gui.interfaz import inicioInterfaz
+
 ## UTILS
 
 def obtener_archivos(directorio):
@@ -41,10 +42,10 @@ if __name__ == "__main__":
         audios_fm = cargarListaAudios("data/FM")
         audios_wn = cargarListaAudios("data/WN")
 
-        determinar(audios_fm, "espec", "espectro_FM.npy")
-        determinar(audios_wn, "espec", "espectro_WN.npy")
-        determinar(audios_fm, "acov", "autocov_fm.npy")
-        determinar(audios_wn, "acov", "autocov_wn.npy")
+        determinar(audios_fm, "espec", "patrones_referencia/espectro_FM.npy")
+        determinar(audios_wn, "espec", "patrones_referencia/espectro_WN.npy")
+        determinar(audios_fm, "acov", "patrones_referencia/autocov_fm.npy")
+        determinar(audios_wn, "acov", "patrones_referencia/autocov_wn.npy")
 
         print("Modelo entrenado Correctamente")
 

@@ -21,10 +21,11 @@ def determinar(audio_data, type, file=""):
         espectros = []
 
         for audio in audio_data:
-            espectros.append(np.abs(calc(audio, type)))
-        
-        espectro = np.mean(espectros, axis = 0)
-        espectro /= np.max(espectro)
+            spec = np.abs(calc(audio, type))
+            if np.max(spec) != 0: spec = spec / np.max(spec) #Normalización
+            espectros.append(spec)
+
+        espectro = np.mean(espectros, axis = 0) #Calcular promedio
 
         if file:
             np.save(file, espectro)
@@ -32,5 +33,5 @@ def determinar(audio_data, type, file=""):
         return espectro
     
     espectro = np.abs(calc(audio_data, type))
-    return (espectro / np.max(espectro)) if np.max(espectro) != 0 else espectro
+    return (espectro / np.max(espectro)) if np.max(espectro) != 0 else "Error matemático, división por 0"
         

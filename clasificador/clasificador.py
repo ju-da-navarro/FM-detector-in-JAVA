@@ -1,5 +1,5 @@
 import numpy as np
-from espectro import determinar
+from algoritmo.espectro import determinar
 
 def clasificar_audio(audio, espectro_fm, espectro_wn):
     espectro_audio = determinar(audio, "espec")
