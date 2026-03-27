@@ -33,7 +33,7 @@ def cargarListaAudios(directorio, freq = 44100):
 
 if __name__ == "__main__":
 
-    print("1. Entrenar modelo")
+    print("1. Actualizar vectores de referencia")
     print("2. Analizar audio en tiempo real")
 
     opcion = input("Seleccione opción: ")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         determinar(audios_fm, "acov", "patrones_referencia/autocov_fm.npy")
         determinar(audios_wn, "acov", "patrones_referencia/autocov_wn.npy")
 
-        print("Modelo entrenado Correctamente")
+        print("Vectores de referencia actualizados Correctamente")
 
     elif opcion == "2":
         inicioInterfaz()

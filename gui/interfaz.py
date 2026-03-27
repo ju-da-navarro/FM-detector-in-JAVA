@@ -60,7 +60,7 @@ def inicioInterfaz():
     ax2.legend()
 
     ax1.set_xlim(0, 500)
-    ax2.set_xlim(0, 500)
+    ax2.set_xlim(0, 2000)
 
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -82,7 +82,7 @@ def inicioInterfaz():
     ax4.legend()
 
     ax3.set_xlim(0, 500)
-    ax4.set_xlim(0, 500)
+    ax4.set_xlim(0, 2000)
 
     canvas2 = FigureCanvasTkAgg(fig2, master=root)
     canvas2.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -104,15 +104,13 @@ def inicioInterfaz():
 
         ax1.plot(frecuencias, espectro_wn, label="WN", color="blue")
         ax1.set_title("Espectro WN")
-        ax1.set_title("Espectro WN")
         ax1.set_xlabel("Frecuencia (Hz)")
         ax1.set_xlim(0, 500)
 
         ax2.plot(frecuencias, espectro_fm, label="FM", color="green")
         ax2.set_title("Espectro FM")
-        ax2.set_title("Espectro WN")
         ax2.set_xlabel("Frecuencia (Hz)")
-        ax2.set_xlim(0, 500)
+        ax2.set_xlim(0, 2000)
 
         ax3.plot(lags, autocov_wn, label="autocov WN", color="blue")
         ax3.set_title("Autocovarianza WN")
@@ -124,7 +122,7 @@ def inicioInterfaz():
         ax4.set_title("Autocovarianza FM")
         ax4.set_xlabel("Lags (Muestras)")
         ax4.set_ylabel("Autocovarianza")
-        ax4.set_xlim(0, 500)
+        ax4.set_xlim(0, 2000)
 
         # añadir a ambas gráficas
         ax1.plot(frecuencias, espectro_au, linestyle="--", alpha=0.4, color=color, label="Audio")
